@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sunshinewatchface;
+package com.example.android.sunshine.wear;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

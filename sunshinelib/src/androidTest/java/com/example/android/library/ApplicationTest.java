@@ -1,4 +1,4 @@
-package com.example.android.sunshinelib;
+package com.example.android.library;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
