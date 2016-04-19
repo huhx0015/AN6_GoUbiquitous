@@ -1,3 +1,4 @@
+/.gradle
 .gradle
 .DS_Store
 
@@ -39,5 +40,4 @@ project.properties
 *.iws
 
 ##Gradle-based build
-.gradle
 build/
