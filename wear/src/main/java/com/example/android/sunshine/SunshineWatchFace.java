@@ -35,7 +35,7 @@ import android.text.format.Time;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
-import com.example.android.sunshine.wear.R;
+import com.example.android.sunshine.R;
 
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
