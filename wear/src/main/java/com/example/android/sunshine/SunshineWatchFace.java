@@ -34,31 +34,30 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
-
-import com.example.android.sunshine.R;
-
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
- * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
+ * -------------------------------------------------------------------------------------------------
+ * [SunshineWatchFace] CLASS
+ * DEVELOPER: Michael Yoon Huh (HUHX0015)
+ * DESCRIPTION: Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On
+ * devices with low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
+ * -------------------------------------------------------------------------------------------------
  */
+
 public class SunshineWatchFace extends CanvasWatchFaceService {
-    private static final Typeface NORMAL_TYPEFACE =
-            Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
-    /**
-     * Update rate in milliseconds for interactive mode. We update once a second since seconds are
-     * displayed in interactive mode.
-     */
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
+    /** CLASS VARIABLES ________________________________________________________________________ **/
 
-    /**
-     * Handler message id for updating the time periodically in interactive mode.
-     */
-    private static final int MSG_UPDATE_TIME = 0;
+    private static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
+
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
+
+    private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
+
+    /** WATCH FACE SERVICE METHODS _____________________________________________________________ **/
 
     @Override
     public Engine onCreateEngine() {
@@ -85,13 +84,19 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
     }
 
+    /** SUBCLASSES _____________________________________________________________________________ **/
+
     private class Engine extends CanvasWatchFaceService.Engine {
+
+        /** SUBCLASS VARIABLES _________________________________________________________________ **/
+
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Paint mBackgroundPaint;
         Paint mTextPaint;
         boolean mAmbient;
         Time mTime;
+
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
