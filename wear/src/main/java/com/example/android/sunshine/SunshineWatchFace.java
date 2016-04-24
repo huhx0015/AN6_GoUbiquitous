@@ -29,9 +29,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 import java.lang.ref.WeakReference;
@@ -51,11 +53,16 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     /** CLASS VARIABLES ________________________________________________________________________ **/
 
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
+    private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
+    private static final String LOG_TAG = CanvasWatchFaceService.class.getSimpleName();
     private static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
+    private LocalBroadcastManager mBroadcastManager;
 
-    private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
+    private int mWeatherResourceId = R.drawable.art_clear;
+    private String mTempMax = "";
+    private String mTempMin = "";
 
     /** WATCH FACE SERVICE METHODS _____________________________________________________________ **/
 
@@ -104,6 +111,35 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 mTime.setToNow();
             }
         };
+
+        final BroadcastReceiver mSunshineReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_UPDATE);
+                Log.d(LOG_TAG, "mSunshineReceiver: Received Sunshine data: " + sunshineData);
+
+                if (sunshineData == null || sunshineData.length() == 0) {
+                    return;
+                }
+
+                String[] values = sunshineData.split(",");
+                if (values.length < 3) {
+                    return;
+                }
+
+                int weatherId = Integer.valueOf(values[0]);
+
+                // TODO: Set weather resource here.
+                //mWeatherResourceId = WatchUtility.getArtResourceForWeatherCondition(weatherId);
+
+                mTempMax = values[1];
+                mTempMin = values[2];
+
+                invalidate();
+            }
+        };
+
         int mTapCount;
 
         float mXOffset;
@@ -135,6 +171,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
             mTime = new Time();
+
+            mBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         }
 
         @Override
@@ -177,6 +215,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
             SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+
+            // Registers an IntentFilter for the SunshineWearableListener service class.
+            IntentFilter sunshineFilter = new IntentFilter(SunshineWearableListener.SUNSHINE_WEATHER_INTENT);
+            mBroadcastManager.registerReceiver(mSunshineReceiver, sunshineFilter);
+            Log.d(LOG_TAG, "registerReceiver(): Sunshine broadcast receiver registered.");
         }
 
         private void unregisterReceiver() {
@@ -185,6 +228,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = false;
             SunshineWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+            mBroadcastManager.unregisterReceiver(mSunshineReceiver);
         }
 
         @Override

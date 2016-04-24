@@ -20,7 +20,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.example.android.sunshine.MainActivity;
-import com.example.android.sunshine.Utility;
+import com.example.android.Utility;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncAdapter;
 import com.google.android.apps.muzei.api.Artwork;

@@ -15,7 +15,7 @@ import android.widget.RemoteViewsService;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.example.android.sunshine.R;
-import com.example.android.sunshine.Utility;
+import com.example.android.Utility;
 import com.example.android.sunshine.data.WeatherContract;
 
 import java.util.concurrent.ExecutionException;

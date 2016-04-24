@@ -30,7 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.android.sunshine.R;
+import com.example.android.Utility;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.gcm.RegistrationIntentService;
 import com.example.android.sunshine.sync.SunshineSyncAdapter;

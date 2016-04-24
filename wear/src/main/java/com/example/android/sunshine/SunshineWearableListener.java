@@ -37,7 +37,9 @@ public class SunshineWearableListener extends WearableListenerService {
     // SYNC VARIABLES
     private static Handler backgroundHandler;
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";
-    private static final String SUNSHINE_WEATHER_UPDATE = "/sunshine-weather-update";
+
+    public static final String SUNSHINE_WEATHER_UPDATE = "/sunshine-weather-update";
+    public static final String SUNSHINE_WEATHER_INTENT = "/sunshine-weather-intent";
 
     /** OVERRIDDEN METHODS _____________________________________________________________________ **/
 

@@ -29,7 +29,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.android.sunshine.R;
+import com.example.android.Utility;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncAdapter;
 import com.google.android.gms.location.places.Place;
