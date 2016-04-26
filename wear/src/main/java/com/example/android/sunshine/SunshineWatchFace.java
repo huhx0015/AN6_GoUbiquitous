@@ -71,7 +71,10 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         return new Engine();
     }
 
+    /** SUBCLASSES _____________________________________________________________________________ **/
+
     private static class EngineHandler extends Handler {
+
         private final WeakReference<SunshineWatchFace.Engine> mWeakReference;
 
         public EngineHandler(SunshineWatchFace.Engine reference) {
@@ -90,8 +93,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
         }
     }
-
-    /** SUBCLASSES _____________________________________________________________________________ **/
 
     private class Engine extends CanvasWatchFaceService.Engine {
 
@@ -145,10 +146,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         float mXOffset;
         float mYOffset;
 
-        /**
-         * Whether the display supports fewer bits for each color in ambient mode. When true, we
-         * disable anti-aliasing in ambient mode.
-         */
+        // Whether the display supports fewer bits for each color in ambient mode. When true, we
+        // disable anti-aliasing in ambient mode.
         boolean mLowBitAmbient;
 
         @Override
@@ -209,9 +208,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
 
         private void registerReceiver() {
+
             if (mRegisteredTimeZoneReceiver) {
                 return;
             }
+
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
             SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
@@ -274,22 +275,23 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             updateTimer();
         }
 
-        /**
-         * Captures tap event (and tap type) and toggles the background color if the user finishes
-         * a tap.
-         */
+        // onTapCommand(): Captures tap event (and tap type) and toggles the background color if the
+        // user finishes a tap.
         @Override
         public void onTapCommand(int tapType, int x, int y, long eventTime) {
             Resources resources = SunshineWatchFace.this.getResources();
             switch (tapType) {
+
+                // The user has started touching the screen.
                 case TAP_TYPE_TOUCH:
-                    // The user has started touching the screen.
                     break;
+
+                // The user has started a different gesture or otherwise cancelled the tap.
                 case TAP_TYPE_TOUCH_CANCEL:
-                    // The user has started a different gesture or otherwise cancelled the tap.
                     break;
+
+                // The user has completed the tap gesture.
                 case TAP_TYPE_TAP:
-                    // The user has completed the tap gesture.
                     mTapCount++;
                     mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
                             R.color.background : R.color.background2));
@@ -300,7 +302,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-            // Draw the background.
+
+            // Draws the background.
             if (isInAmbientMode()) {
                 canvas.drawColor(Color.BLACK);
             } else {
@@ -315,10 +318,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
         }
 
-        /**
-         * Starts the {@link #mUpdateTimeHandler} timer if it should be running and isn't currently
-         * or stops it if it shouldn't be running but currently is.
-         */
+        // updateTimer(): Starts the {@link #mUpdateTimeHandler} timer if it should be running and
+        // isn't currently or stops it if it shouldn't be running but currently is.
         private void updateTimer() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
             if (shouldTimerBeRunning()) {
@@ -326,17 +327,13 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
         }
 
-        /**
-         * Returns whether the {@link #mUpdateTimeHandler} timer should be running. The timer should
-         * only run when we're visible and in interactive mode.
-         */
+        // shouldTimerBeRunning(): Returns whether the {@link #mUpdateTimeHandler} timer should be
+        // running. The timer should only run when we're visible and in interactive mode.
         private boolean shouldTimerBeRunning() {
             return isVisible() && !isInAmbientMode();
         }
 
-        /**
-         * Handle updating the time periodically in interactive mode.
-         */
+        // handleUpdateTimeMessage(): Handle updating the time periodically in interactive mode.
         private void handleUpdateTimeMessage() {
             invalidate();
             if (shouldTimerBeRunning()) {
