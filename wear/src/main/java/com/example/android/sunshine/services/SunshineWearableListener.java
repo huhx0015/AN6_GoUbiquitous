@@ -1,4 +1,4 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.services;
 
 import android.net.Uri;
 import android.os.Bundle;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.sunshine;
+package com.example.android.sunshine.watch;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +36,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
+
+import com.example.android.sunshine.R;
+import com.example.android.sunshine.services.SunshineWearableListener;
+import com.example.android.sunshine.utils.WatchDrawUtil;
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -53,13 +57,20 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     /** CLASS VARIABLES ________________________________________________________________________ **/
 
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
-    private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
-    private static final String LOG_TAG = CanvasWatchFaceService.class.getSimpleName();
-    private static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
-
+    // BROADCAST VARIABLES
     private LocalBroadcastManager mBroadcastManager;
 
+    // FONT VARIABLES
+    private static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
+
+    // LOGGING VARIABLES
+    private static final String LOG_TAG = CanvasWatchFaceService.class.getSimpleName();
+
+    // TIMER VARIABLES
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
+    private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
+
+    // WEATHER VARIABLES
     private int mWeatherResourceId = R.drawable.art_clear;
     private String mTempMax = "";
     private String mTempMin = "";
@@ -98,12 +109,20 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         /** SUBCLASS VARIABLES _________________________________________________________________ **/
 
-        final Handler mUpdateTimeHandler = new EngineHandler(this);
-        boolean mRegisteredTimeZoneReceiver = false;
-        Paint mBackgroundPaint;
-        Paint mTextPaint;
         boolean mAmbient;
+        boolean mRegisteredTimeZoneReceiver = false;
         Time mTime;
+
+        // PAINT VARIABLES:
+        Paint mBackgroundPaint;
+        Paint mDateTextPaint;
+        Paint mMaxTempTextPaint;
+        Paint mMinTempTextPaint;
+        Paint mTextPaint;
+        Paint mTimeTextPaint;
+
+        // HANDLER VARIABLES:
+        final Handler mUpdateTimeHandler = new EngineHandler(this);
 
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
@@ -141,14 +160,15 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
         };
 
-        int mTapCount;
-
         float mXOffset;
         float mYOffset;
+        int mTapCount;
 
         // Whether the display supports fewer bits for each color in ambient mode. When true, we
         // disable anti-aliasing in ambient mode.
         boolean mLowBitAmbient;
+
+        /** ENGINE LIFECYCLE METHODS ___________________________________________________________ **/
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -160,18 +180,13 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                     .setShowSystemUiTime(false)
                     .setAcceptsTapEvents(true)
                     .build());
+
             Resources resources = SunshineWatchFace.this.getResources();
+            mBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+            mTime = new Time();
             mYOffset = resources.getDimension(R.dimen.digital_y_offset);
 
-            mBackgroundPaint = new Paint();
-            mBackgroundPaint.setColor(resources.getColor(R.color.background));
-
-            mTextPaint = new Paint();
-            mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
-
-            mTime = new Time();
-
-            mBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+            initPaint(resources); // Initializes all the Paint objects in this class.
         }
 
         @Override
@@ -207,30 +222,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             updateTimer();
         }
 
-        private void registerReceiver() {
-
-            if (mRegisteredTimeZoneReceiver) {
-                return;
-            }
-
-            mRegisteredTimeZoneReceiver = true;
-            IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-            SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
-
-            // Registers an IntentFilter for the SunshineWearableListener service class.
-            IntentFilter sunshineFilter = new IntentFilter(SunshineWearableListener.SUNSHINE_WEATHER_INTENT);
-            mBroadcastManager.registerReceiver(mSunshineReceiver, sunshineFilter);
-            Log.d(LOG_TAG, "registerReceiver(): Sunshine broadcast receiver registered.");
-        }
-
-        private void unregisterReceiver() {
-            if (!mRegisteredTimeZoneReceiver) {
-                return;
-            }
-            mRegisteredTimeZoneReceiver = false;
-            SunshineWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
-            mBroadcastManager.unregisterReceiver(mSunshineReceiver);
-        }
+        /** ENGINE OVERRIDE METHODS ____________________________________________________________ **/
 
         @Override
         public void onApplyWindowInsets(WindowInsets insets) {
@@ -241,9 +233,20 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             boolean isRound = insets.isRound();
             mXOffset = resources.getDimension(isRound
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
+            float dateTextSize = resources.getDimension(isRound
+                    ? R.dimen.date_text_size_round : R.dimen.date_text_size);
+            float tempTextSize = resources.getDimension(isRound
+                    ? R.dimen.temp_text_size_round : R.dimen.temp_text_size);
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
+            float timeTextSize = resources.getDimension(isRound
+                    ? R.dimen.time_text_size_round : R.dimen.time_text_size);
 
+            // Sets the text size for all the Paint text objects.
+            mDateTextPaint.setTextSize(dateTextSize);
+            mMaxTempTextPaint.setTextSize(tempTextSize);
+            mMinTempTextPaint.setTextSize(tempTextSize);
+            mTimeTextPaint.setTextSize(timeTextSize);
             mTextPaint.setTextSize(textSize);
         }
 
@@ -266,6 +269,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
                     mTextPaint.setAntiAlias(!inAmbientMode);
+                    mTimeTextPaint.setAntiAlias(!inAmbientMode);
                 }
                 invalidate();
             }
@@ -311,11 +315,19 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
-            mTime.setToNow();
-            String text = mAmbient
-                    ? String.format("%d:%02d", mTime.hour, mTime.minute)
-                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+//            mTime.setToNow();
+//            String text = mAmbient
+//                    ? String.format("%d:%02d", mTime.hour, mTime.minute)
+//                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
+//            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+
+
+            // TODO: New code:
+            WatchDrawUtil.drawDate(canvas, bounds, mDateTextPaint);
+            WatchDrawUtil.drawTime(canvas, bounds, mTimeTextPaint);
+            WatchDrawUtil.drawDivider(canvas, bounds, mDateTextPaint);
+            WatchDrawUtil.drawMinMaxTemp(canvas, bounds, mTempMax, mTempMin, mMaxTempTextPaint, mMinTempTextPaint);
+            WatchDrawUtil.drawWeather(canvas, bounds, mWeatherResourceId, mBackgroundPaint, isInAmbientMode(), getBaseContext());
         }
 
         // updateTimer(): Starts the {@link #mUpdateTimeHandler} timer if it should be running and
@@ -342,6 +354,59 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                         - (timeMs % INTERACTIVE_UPDATE_RATE_MS);
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
             }
+        }
+
+        /** RECEIVER METHODS ___________________________________________________________________ **/
+
+        // registerReceiver(): Registers the broadcast receivers.
+        private void registerReceiver() {
+
+            if (mRegisteredTimeZoneReceiver) {
+                return;
+            }
+
+            mRegisteredTimeZoneReceiver = true;
+            IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
+            SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+
+            // Registers an IntentFilter for the SunshineWearableListener service class.
+            IntentFilter sunshineFilter = new IntentFilter(SunshineWearableListener.SUNSHINE_WEATHER_INTENT);
+            mBroadcastManager.registerReceiver(mSunshineReceiver, sunshineFilter);
+
+            Log.d(LOG_TAG, "registerReceiver(): Sunshine broadcast receiver registered.");
+        }
+
+        // unregisterReceiver(): Unregisters the broadcast receivers.
+        private void unregisterReceiver() {
+
+            if (!mRegisteredTimeZoneReceiver) {
+                return;
+            }
+            mRegisteredTimeZoneReceiver = false;
+
+            // Unregisters the broadcast receivers.
+            SunshineWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+            mBroadcastManager.unregisterReceiver(mSunshineReceiver);
+
+            Log.d(LOG_TAG, "registerReceiver(): Sunshine broadcast receiver unregistered.");
+        }
+
+        /** WATCHFACE CANVAS METHODS ___________________________________________________________ **/
+
+        // initPaint(): Initializes all of the Paint objects in this class.
+        private void initPaint(Resources resources) {
+            mBackgroundPaint = new Paint();
+            mBackgroundPaint.setColor(resources.getColor(R.color.background));
+            mTextPaint = new Paint();
+            mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mDateTextPaint = new Paint();
+            mDateTextPaint = createTextPaint(resources.getColor(R.color.secondary_text));
+            mTimeTextPaint = new Paint();
+            mTimeTextPaint = createTextPaint(resources.getColor(R.color.primary_text));
+            mMaxTempTextPaint = new Paint();
+            mMaxTempTextPaint = createTextPaint(resources.getColor(R.color.primary_text));
+            mMinTempTextPaint = new Paint();
+            mMinTempTextPaint = createTextPaint(resources.getColor(R.color.secondary_text));
         }
     }
 }
