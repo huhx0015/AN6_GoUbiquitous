@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.WatchData;
 

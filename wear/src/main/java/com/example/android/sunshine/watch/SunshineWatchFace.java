@@ -135,7 +135,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_UPDATE);
+                String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_PATH);
 
                 Log.d(LOG_TAG, "mSunshineReceiver: Received Sunshine data: " + sunshineData);
 
