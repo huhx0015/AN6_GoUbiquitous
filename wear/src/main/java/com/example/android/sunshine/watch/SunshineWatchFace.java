@@ -36,7 +36,6 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
-
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.services.SunshineWearableListener;
 import com.example.android.sunshine.utils.WatchDrawUtil;
@@ -137,8 +136,10 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             public void onReceive(Context context, Intent intent) {
 
                 String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_UPDATE);
+
                 Log.d(LOG_TAG, "mSunshineReceiver: Received Sunshine data: " + sunshineData);
 
+                // If the received data is null or empty, the method ends.
                 if (sunshineData == null || sunshineData.length() == 0) {
                     return;
                 }
@@ -148,11 +149,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                     return;
                 }
 
+                // Retrieves the weather ID code from the data passed from the mobile app.
                 int weatherId = Integer.valueOf(values[0]);
+                mWeatherResourceId = WatchDrawUtil.getWeatherConditionResource(weatherId);
 
-                // TODO: Set weather resource here.
-                //mWeatherResourceId = WatchUtility.getArtResourceForWeatherCondition(weatherId);
-
+                // Retrieves the max and min weather temperature vvalues.
                 mTempMax = values[1];
                 mTempMin = values[2];
 
