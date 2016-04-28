@@ -368,6 +368,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 updateWidgets();
                 updateMuzei();
                 notifyWeather();
+                updateWear();
             }
             Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
             setLocationStatus(getContext(), LOCATION_STATUS_OK);
@@ -656,5 +657,30 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(c.getString(R.string.pref_location_status_key), locationStatus);
         spe.commit();
+    }
+
+    // updateWear(): Sends the weather data to the paired Android Wear device.
+    private void updateWear() {
+
+        Log.d(LOG_TAG, "updateWear(): Preparing data to send to the paired Android Wear device...");
+
+        String currentLocation = Utility.getPreferredLocation(getContext());
+        Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(currentLocation, System.currentTimeMillis());
+        Cursor cursor = getContext().getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+
+            // Retrieves the weather ID, max, and min temps.
+            int weatherId = cursor.getInt(INDEX_WEATHER_ID);
+            String maxTemp = Utility.formatTemperature(getContext(), cursor.getDouble(INDEX_MAX_TEMP));
+            String minTemp = Utility.formatTemperature(getContext(), cursor.getDouble(INDEX_MIN_TEMP));
+            cursor.close();
+
+            // Sends the weather data to the Android Wear device.
+            SunshineSyncWear wearSync = new SunshineSyncWear(getContext());
+            wearSync.updateWearable(String.valueOf(weatherId), maxTemp, minTemp);
+        } else {
+            if (cursor != null) { cursor.close(); }
+        }
     }
 }
