@@ -678,7 +678,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
             // Sends the weather data to the Android Wear device.
             SunshineSyncWear wearSync = new SunshineSyncWear(getContext());
-            wearSync.updateWearable(String.valueOf(weatherId), maxTemp, minTemp);
+            wearSync.syncWearWeather(String.valueOf(weatherId), maxTemp, minTemp);
         } else {
             if (cursor != null) { cursor.close(); }
         }

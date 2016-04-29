@@ -29,54 +29,62 @@ public class SunshineSyncWear implements GoogleApiClient.ConnectionCallbacks,
 
     /** CLASS VARIABLES ________________________________________________________________________ **/
 
+    // LOGGING VARIABLES
     private static final String LOG_TAG = SunshineSyncWear.class.getSimpleName();
 
-    private GoogleApiClient googleApiClient;
-    private static final String UPDATE_WEATHER_PATH = "/update-weather";
-    private static final Charset CHARSET = Charset.forName("UTF-8");
+    // SYNC VARIABLES
+    private static final String SUNSHINE_WEATHER_PATH = "/sunshine-weather";
+    private GoogleApiClient mGoogleApiClient;
 
-    private String weatherId;
-    private String maxTemp;
-    private String minTemp;
+    // WEATHER VARIABLES
+    private String mMaxTemp;
+    private String mMinTemp;
+    private String mWeatherId;
 
-    private class UpdateNodesTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... args) {
-            Collection<String> nodes = getNodes();
-            Log.i(LOG_TAG, "updating weather for " + nodes.size() + " nodes");
-            for (String node : nodes) {
-                updateNode(node);
-            }
-            return null;
-        }
-    }
-
+    /** CONSTRUCTOR METHODS ____________________________________________________________________ **/
+    
+    // SunshineSyncWear(): Constructor for the SunshineSyncWear class. Sets up the GoogleApiClient.
     public SunshineSyncWear(Context context) {
-        googleApiClient = new GoogleApiClient.Builder(context)
+
+        // Sets up the GoogleApiClient connection.
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
     }
 
-    public void updateWearable(String weatherId, String maxTemp, String minTemp) {
-        this.weatherId = weatherId;
-        this.maxTemp = maxTemp;
-        this.minTemp = minTemp;
-        googleApiClient.connect();
-    }
+    /** GOOGLE API CLIENT METHODS ______________________________________________________________ **/
 
+    // onConnected(): Runs when the client is connected.
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(LOG_TAG, "connected: " + bundle);
 
-        new UpdateNodesTask().execute();
+        Log.d(LOG_TAG, "onConnected(): Google API client connection established.");
+
+        // Updates the nodes in the background.
+        SunshineNodeSyncTask syncTask = new SunshineNodeSyncTask();
+        syncTask.execute();
     }
 
-    private Collection<String> getNodes() {
+    // onConnectionFailed(): Runs when the client fails to connect.
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d(LOG_TAG, "onConnectionFailed(): Google API client connection failed: " + connectionResult.getErrorMessage());
+    }
+
+    // onConnectionSuspended(): Runs when the client connection is suspended.
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(LOG_TAG, "onConnectionSuspended(): Google API client connection was suspended.");
+    }
+
+    /** SYNC METHODS ___________________________________________________________________________ **/
+
+    // fetchNodes(): Retrieves the connected nodes.
+    private Collection<String> fetchNodes() {
         HashSet<String> results = new HashSet<>();
-        NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+        NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
 
         for (Node node : nodes.getNodes()) {
             results.add(node.getId());
@@ -84,31 +92,52 @@ public class SunshineSyncWear implements GoogleApiClient.ConnectionCallbacks,
         return results;
     }
 
-    private void updateNode(String node) {
-        Log.i(LOG_TAG, "updating watch: node=" + node + ", weatherId=" + weatherId + ", maxTemp=" + maxTemp + ", minTemp=" + minTemp);
+    // syncWearWeather(): Sets the weatherId, maxTemp, and minTemp values and initializes the
+    // connection.
+    public void syncWearWeather(String weatherId, String maxTemp, String minTemp) {
+        this.mMaxTemp = maxTemp;
+        this.mMinTemp = minTemp;
+        this.mWeatherId = weatherId;
 
-        String dataString = weatherId + "," + maxTemp + "," + minTemp;
-        byte[] data = dataString.getBytes(CHARSET);
-        PendingResult<MessageApi.SendMessageResult> messageResult =
-                Wearable.MessageApi.sendMessage(googleApiClient, node, UPDATE_WEATHER_PATH, data);
-        messageResult.setResultCallback(
-                new ResultCallback<MessageApi.SendMessageResult>() {
-                    @Override
-                    public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                        Log.i(LOG_TAG, "Received SendMessageResult: " + sendMessageResult +
-                                " (status: " + sendMessageResult.getStatus() + ")");
-                    }
-                }
+        mGoogleApiClient.connect();
+    }
+
+    // updateNote(): Updates the requested node.
+    private void updateNode(String node) {
+
+        String dataString = mWeatherId + "," + mMaxTemp + "," + mMinTemp;
+        byte[] data = dataString.getBytes(Charset.forName("UTF-8"));
+
+        Log.d(LOG_TAG, "updateNote(): Updating " + node + " with : " + dataString;
+
+        PendingResult<MessageApi.SendMessageResult> messageResult = Wearable.MessageApi.sendMessage(mGoogleApiClient, node, SUNSHINE_WEATHER_PATH, data);
+        messageResult.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                                            @Override
+                                            public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                                                Log.d(LOG_TAG, "onResult(): : Node update result: " + sendMessageResult.toString());
+                                            }
+                                        }
         );
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(LOG_TAG, "connection suspended: " + i);
-    }
+    /** SUBCLASSES _____________________________________________________________________________ **/
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.i(LOG_TAG, "connection failed: " + connectionResult);
+    /**
+     * --------------------------------------------------------------------------------------------
+     * [SunshineNodeSyncTask] CLASS
+     * DESCRIPTION: This is an AsyncTask-based class that handles the updating of the Nodes in the
+     * background.
+     * --------------------------------------------------------------------------------------------
+     */
+    private class SunshineNodeSyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... args) {
+            Collection<String> nodes = fetchNodes();
+            for (String node : nodes) {
+                updateNode(node);
+            }
+            return null;
+        }
     }
 }
