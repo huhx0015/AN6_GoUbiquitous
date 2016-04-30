@@ -7,7 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import com.example.android.sunshine.R;
-import com.example.android.sunshine.data.WatchData;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * -------------------------------------------------------------------------------------------------
@@ -18,26 +21,35 @@ import com.example.android.sunshine.data.WatchData;
  */
 public class WatchDrawUtil {
 
+    /** CLASS VARIABLES ________________________________________________________________________ **/
+
+    // DATE FORMAT VARIABLES
+    private static DateFormat DATE_FORMAT = DateFormat.getDateInstance();
+    private static DateFormat DAY_OF_WEEK_FORMAT = new SimpleDateFormat("E", Locale.getDefault());
+    private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hh:mm");
+
+    /** DRAW METHODS ___________________________________________________________________________ **/
+
     // drawDate(): Draws the date text on the watchface canvas.
     public static void drawDate(Canvas canvas, Rect bounds, Paint dateTimePaint) {
-        WatchData watchData = new WatchData();
+        Date date = new Date();
         int width = bounds.width();
         int height = bounds.height();
 
         float x = width * 0.1f;
         float y = height * 0.45f;
-        canvas.drawText(watchData.date, x, y, dateTimePaint);
+        canvas.drawText(TIME_FORMAT.format(DAY_OF_WEEK_FORMAT.format(date) + " " + DATE_FORMAT.format(date)), x, y, dateTimePaint);
     }
 
     // drawTime(): Draws the time text on the watchface canvas.
     public static void drawTime(Canvas canvas, Rect bounds, Paint timeTextPaint) {
-        WatchData watchData = new WatchData();
+        Date date = new Date();
         int width = bounds.width();
         int height = bounds.height();
 
         float x = width * 0.2f;
         float y = height * 0.3f;
-        canvas.drawText(watchData.time, x, y, timeTextPaint);
+        canvas.drawText(TIME_FORMAT.format(date), x, y, timeTextPaint);
     }
 
     // drawDivider(): Draws the divider line on the watchface canvas.
