@@ -108,7 +108,7 @@ public class SunshineSyncWear implements GoogleApiClient.ConnectionCallbacks,
         String dataString = mWeatherId + "," + mMaxTemp + "," + mMinTemp;
         byte[] data = dataString.getBytes(Charset.forName("UTF-8"));
 
-        Log.d(LOG_TAG, "updateNote(): Updating " + node + " with : " + dataString;
+        Log.d(LOG_TAG, "updateNote(): Updating " + node + " with : " + dataString);
 
         PendingResult<MessageApi.SendMessageResult> messageResult = Wearable.MessageApi.sendMessage(mGoogleApiClient, node, SUNSHINE_WEATHER_PATH, data);
         messageResult.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
