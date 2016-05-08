@@ -30,26 +30,33 @@ public class WatchDrawUtil {
 
     /** DRAW METHODS ___________________________________________________________________________ **/
 
-    // drawDate(): Draws the date text on the watchface canvas.
-    public static void drawDate(Canvas canvas, Rect bounds, Paint dateTimePaint) {
-        Date date = new Date();
-        int width = bounds.width();
-        int height = bounds.height();
-
-        float x = width * 0.1f;
-        float y = height * 0.45f;
-        canvas.drawText(DAY_OF_WEEK_FORMAT.format(date) + " " + DATE_FORMAT.format(date), x, y, dateTimePaint);
-    }
-
     // drawTime(): Draws the time text on the watchface canvas.
     public static void drawTime(Canvas canvas, Rect bounds, Paint timeTextPaint) {
         Date date = new Date();
         int width = bounds.width();
         int height = bounds.height();
-
-        float x = width * 0.2f;
+        float x = width * 0.25f;
         float y = height * 0.3f;
+
         canvas.drawText(TIME_FORMAT.format(date), x, y, timeTextPaint);
+    }
+
+    // drawDate(): Draws the date text on the watchface canvas.
+    public static void drawDate(Canvas canvas, Rect bounds, Paint dateTimePaint, boolean isRound) {
+        Date date = new Date();
+        int width = bounds.width();
+        int height = bounds.height();
+        float x, y;
+
+        if (isRound) {
+            x = width * 0.15f;
+            y = height * 0.45f;
+        } else {
+            x = width * 0.10f;
+            y = height * 0.45f;
+        }
+
+        canvas.drawText(DAY_OF_WEEK_FORMAT.format(date) + " " + DATE_FORMAT.format(date), x, y, dateTimePaint);
     }
 
     // drawDivider(): Draws the divider line on the watchface canvas.
@@ -62,9 +69,16 @@ public class WatchDrawUtil {
 
     // drawWeather(): Draws the weather resource on the watchfac canvas.
     public static void drawWeather(Canvas canvas, Rect bounds, int weatherResource,
-                                   Paint backgroundPaint, boolean isAmbient, Context context) {
-        float x = bounds.width() * 0.05f;
-        float y = bounds.height() * 0.6f;
+                                   Paint backgroundPaint, boolean isAmbient, boolean isRound, Context context) {
+        float x, y;
+
+        if (isRound) {
+            x = bounds.width() * 0.27f;
+            y = bounds.height() * 0.6f;
+        } else {
+            x = bounds.width() * 0.25f;
+            y = bounds.height() * 0.55f;
+        }
 
         // Checks to see if the watch is currently in ambient mode or not.
         if (!isAmbient) {
@@ -75,10 +89,18 @@ public class WatchDrawUtil {
 
     // drawMinMaxTemp(): Draws the min and max temperature text on the watchface canvas.
     public static void drawMinMaxTemp(Canvas canvas, Rect bounds, String maxTemp, String minTemp,
-                                  Paint maxTextPaint, Paint minTextPaint) {
-        float y = bounds.height() * 0.75f;
-        float xMax = bounds.width() * 0.4f;
-        float xMin = bounds.width() * 0.7f;
+                                  Paint maxTextPaint, Paint minTextPaint, boolean isRound) {
+        float y, xMax, xMin;
+
+        if (isRound) {
+            y = bounds.height() * 0.62f;
+            xMax = bounds.width() * 0.26f;
+            xMin = bounds.width() * 0.56f;
+        } else {
+            y = bounds.height() * 0.58f;
+            xMax = bounds.width() * 0.30f;
+            xMin = bounds.width() * 0.60f;
+        }
 
         canvas.drawText(maxTemp, xMax, y, maxTextPaint);
         canvas.drawText(minTemp, xMin, y, minTextPaint);

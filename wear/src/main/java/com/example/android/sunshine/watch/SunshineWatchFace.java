@@ -69,10 +69,13 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
     private static final int MSG_UPDATE_TIME = 0; // Handler message id for updating the time periodically in interactive mode.
 
+    // WEAR VARIABLES
+    private boolean mIsRound = false;
+
     // WEATHER VARIABLES
     private int mWeatherResourceId = R.drawable.art_clear;
-    private String mTempMax = "";
-    private String mTempMin = "";
+    private String mTempMax = "-";
+    private String mTempMin = "-";
 
     /** WATCH FACE SERVICE METHODS _____________________________________________________________ **/
 
@@ -119,7 +122,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         Paint mDateTextPaint;
         Paint mMaxTempTextPaint;
         Paint mMinTempTextPaint;
-        Paint mTextPaint;
+        Paint mClockTextPaint;
         Paint mTimeTextPaint;
 
         // HANDLER VARIABLES:
@@ -233,24 +236,24 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
             // Load resources that have alternate values for round watches.
             Resources resources = SunshineWatchFace.this.getResources();
-            boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound
+            mIsRound = insets.isRound();
+            mXOffset = resources.getDimension(mIsRound
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
-            float dateTextSize = resources.getDimension(isRound
-                    ? R.dimen.date_text_size_round : R.dimen.date_text_size);
-            float tempTextSize = resources.getDimension(isRound
-                    ? R.dimen.temp_text_size_round : R.dimen.temp_text_size);
-            float textSize = resources.getDimension(isRound
+            float clockTextSize = resources.getDimension(mIsRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
-            float timeTextSize = resources.getDimension(isRound
-                    ? R.dimen.time_text_size_round : R.dimen.time_text_size);
+            float timeTextSize = resources.getDimension(mIsRound
+                    ? R.dimen.clock_time_text_size_round : R.dimen.clock_time_text_size);
+            float dateTextSize = resources.getDimension(mIsRound
+                    ? R.dimen.date_text_size_round : R.dimen.date_text_size);
+            float tempTextSize = resources.getDimension(mIsRound
+                    ? R.dimen.temp_text_size_round : R.dimen.temp_text_size);
 
             // Sets the text size for all the Paint text objects.
             mDateTextPaint.setTextSize(dateTextSize);
             mMaxTempTextPaint.setTextSize(tempTextSize);
             mMinTempTextPaint.setTextSize(tempTextSize);
             mTimeTextPaint.setTextSize(timeTextSize);
-            mTextPaint.setTextSize(textSize);
+            mClockTextPaint.setTextSize(clockTextSize);
         }
 
         @Override
@@ -268,10 +271,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         @Override
         public void onAmbientModeChanged(boolean inAmbientMode) {
             super.onAmbientModeChanged(inAmbientMode);
+
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
-                    mTextPaint.setAntiAlias(!inAmbientMode);
+                    mClockTextPaint.setAntiAlias(!inAmbientMode);
                     mTimeTextPaint.setAntiAlias(!inAmbientMode);
                 }
                 invalidate();
@@ -317,11 +321,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
             }
 
-            WatchDrawUtil.drawDate(canvas, bounds, mDateTextPaint);
             WatchDrawUtil.drawTime(canvas, bounds, mTimeTextPaint);
+            WatchDrawUtil.drawDate(canvas, bounds, mDateTextPaint, mIsRound);
             WatchDrawUtil.drawDivider(canvas, bounds, mDateTextPaint);
-            WatchDrawUtil.drawMinMaxTemp(canvas, bounds, mTempMax, mTempMin, mMaxTempTextPaint, mMinTempTextPaint);
-            WatchDrawUtil.drawWeather(canvas, bounds, mWeatherResourceId, mBackgroundPaint, isInAmbientMode(), getBaseContext());
+            WatchDrawUtil.drawMinMaxTemp(canvas, bounds, mTempMax, mTempMin, mMaxTempTextPaint, mMinTempTextPaint, mIsRound);
+            WatchDrawUtil.drawWeather(canvas, bounds, mWeatherResourceId, mBackgroundPaint, isInAmbientMode(), mIsRound, getBaseContext());
         }
 
         // updateTimer(): Starts the {@link #mUpdateTimeHandler} timer if it should be running and
@@ -395,12 +399,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mBackgroundPaint.setColor(resources.getColor(R.color.watchface_background));
 
             // DIGITAL TEXT:
-            mTextPaint = new Paint();
-            mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mClockTextPaint = new Paint();
+            mClockTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
             // DATE TEXT:
             mDateTextPaint = new Paint();
-            mDateTextPaint = createTextPaint(resources.getColor(R.color.min_temp_text));
+            mDateTextPaint = createTextPaint(resources.getColor(R.color.date_text));
 
             // TIME TEXT:
             mTimeTextPaint = new Paint();
