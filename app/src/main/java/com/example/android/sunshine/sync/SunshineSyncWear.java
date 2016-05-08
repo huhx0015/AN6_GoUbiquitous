@@ -95,9 +95,12 @@ public class SunshineSyncWear implements GoogleApiClient.ConnectionCallbacks,
     // syncWearWeather(): Sets the weatherId, maxTemp, and minTemp values and initializes the
     // connection.
     public void syncWearWeather(String weatherId, String maxTemp, String minTemp) {
+
         this.mMaxTemp = maxTemp;
         this.mMinTemp = minTemp;
         this.mWeatherId = weatherId;
+
+        Log.d(LOG_TAG, "syncWearWeather(): Connecting to Google API client...");
 
         mGoogleApiClient.connect();
     }
@@ -108,13 +111,13 @@ public class SunshineSyncWear implements GoogleApiClient.ConnectionCallbacks,
         String dataString = mWeatherId + "," + mMaxTemp + "," + mMinTemp;
         byte[] data = dataString.getBytes(Charset.forName("UTF-8"));
 
-        Log.d(LOG_TAG, "updateNote(): Updating " + node + " with : " + dataString);
+        Log.d(LOG_TAG, "updateNote(): Updating Android Wear with: " + dataString);
 
         PendingResult<MessageApi.SendMessageResult> messageResult = Wearable.MessageApi.sendMessage(mGoogleApiClient, node, SUNSHINE_WEATHER_PATH, data);
         messageResult.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                                             @Override
                                             public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                                                Log.d(LOG_TAG, "onResult(): : Node update result: " + sendMessageResult.toString());
+                                                Log.d(LOG_TAG, "onResult(): Node update result: " + sendMessageResult.toString());
                                             }
                                         }
         );

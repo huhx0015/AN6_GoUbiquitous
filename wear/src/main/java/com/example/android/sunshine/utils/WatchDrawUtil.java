@@ -38,7 +38,7 @@ public class WatchDrawUtil {
 
         float x = width * 0.1f;
         float y = height * 0.45f;
-        canvas.drawText(TIME_FORMAT.format(DAY_OF_WEEK_FORMAT.format(date) + " " + DATE_FORMAT.format(date)), x, y, dateTimePaint);
+        canvas.drawText(DAY_OF_WEEK_FORMAT.format(date) + " " + DATE_FORMAT.format(date), x, y, dateTimePaint);
     }
 
     // drawTime(): Draws the time text on the watchface canvas.

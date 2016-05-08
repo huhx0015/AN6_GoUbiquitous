@@ -40,6 +40,8 @@ public class SunshineWearableListener extends WearableListenerService {
     public void onCreate() {
         super.onCreate();
 
+        Log.d(LOG_TAG, "onCreate(): onCreate() invoked.");
+
         // Sets up a new Google API data connection to communicate with the wearable device.
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)

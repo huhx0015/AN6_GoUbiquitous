@@ -214,6 +214,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                                         String locationSetting)
             throws JSONException {
 
+        Log.d(LOG_TAG, "getWeatherDataFromJson(): Retrieving weather JSON data...");
+
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
         // into an Object hierarchy for us.
@@ -364,6 +366,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
                         new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+
+                Log.d(LOG_TAG, "getWeatherDataFromJson(): Updating weather on notification, widgets, and wearable devices...");
 
                 updateWidgets();
                 updateMuzei();
@@ -676,11 +680,18 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             String minTemp = Utility.formatTemperature(getContext(), cursor.getDouble(INDEX_MIN_TEMP));
             cursor.close();
 
+            Log.d(LOG_TAG, "updateWear(): Syncing weather data with Android Wear device...");
+
             // Sends the weather data to the Android Wear device.
             SunshineSyncWear wearSync = new SunshineSyncWear(getContext());
             wearSync.syncWearWeather(String.valueOf(weatherId), maxTemp, minTemp);
         } else {
-            if (cursor != null) { cursor.close(); }
+            if (cursor != null) {
+                Log.e(LOG_TAG, "updateWear(): ERROR: Cursor failed to move to the first row.");
+                cursor.close();
+            } else {
+                Log.e(LOG_TAG, "updateWear(): ERROR: Cursor was null.");
+            }
         }
     }
 }

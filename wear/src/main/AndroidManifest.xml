@@ -40,6 +40,13 @@
         android:theme="@android:style/Theme.DeviceDefault">
 
         <service
+            android:name=".services.SunshineWearableListener">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".watch.SunshineWatchFace"
             android:label="@string/my_digital_name"
             android:permission="android.permission.BIND_WALLPAPER">
@@ -55,7 +62,6 @@
 
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
-
                 <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
             </intent-filter>
         </service>
