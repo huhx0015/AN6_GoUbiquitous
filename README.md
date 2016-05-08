@@ -1,5 +1,27 @@
-Advanced Android Sample App
-===================================
+AN6_Go_Ubiquitous
+==========================
+
+DEVELOPER: Michael Yoon Huh
+
+Sunshine Watchface:
+
+![an6_preview_square](https://cloud.githubusercontent.com/assets/1645482/15096607/6ebb6a50-14b5-11e6-9e83-af0ee782ce5f.png)
+
+![an6_preview_round](https://cloud.githubusercontent.com/assets/1645482/15096603/6646ff56-14b5-11e6-9ade-e22610c426de.png)
+
+Android Nanodegree | Project 6: Go Ubiquitous: A project for the Android Nanodegree program in which a wearable watch face is built for the example Sunshine app to extend support for Android Wear.
+
+# Rubric
+
+### Required Components
+
+- [x] App works on both round and square face watches.
+- [x] App displays the current time.
+- [x] App displays the high and low temperatures.
+- [x] App displays a graphic that summarizes the day’s weather (e.g., a sunny image, rainy image, cloudy image, etc.).
+- [x] App conforms to common standards found in the Android Nanodegree General Project Guidelines.
+
+# Advanced Android Sample App [Mobile]
 
 Synchronizes weather information from OpenWeatherMap on Android Phones and Tablets. Used in the Udacity Advanced Android course.
 
@@ -48,4 +70,3 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
-
