@@ -16,7 +16,6 @@ Android Support RecyclerView 22.2.0
 Google Play Services GCM 7.0.0
 BumpTech Glide 3.5.2
 
-
 Getting Started
 ---------------
 This sample uses the Gradle build system.  To build this project, use the
