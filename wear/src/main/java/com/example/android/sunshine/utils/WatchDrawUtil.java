@@ -67,7 +67,7 @@ public class WatchDrawUtil {
         float y = bounds.height() * 0.6f;
 
         // Checks to see if the watch is currently in ambient mode or not.
-        if (isAmbient) {
+        if (!isAmbient) {
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), weatherResource);
             canvas.drawBitmap(bitmap, x, y, backgroundPaint);
         }

@@ -85,6 +85,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     private static class EngineHandler extends Handler {
 
+        /** SUBCLASS VARIABLES _________________________________________________________________ **/
+
         private final WeakReference<SunshineWatchFace.Engine> mWeakReference;
 
         public EngineHandler(SunshineWatchFace.Engine reference) {
@@ -299,7 +301,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 case TAP_TYPE_TAP:
                     mTapCount++;
                     mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
-                            R.color.background : R.color.background2));
+                            R.color.watchface_background : R.color.watchface_tap_background));
                     break;
             }
             invalidate();
@@ -315,15 +317,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
             }
 
-            // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
-//            mTime.setToNow();
-//            String text = mAmbient
-//                    ? String.format("%d:%02d", mTime.hour, mTime.minute)
-//                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-//            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
-
-
-            // TODO: New code:
             WatchDrawUtil.drawDate(canvas, bounds, mDateTextPaint);
             WatchDrawUtil.drawTime(canvas, bounds, mTimeTextPaint);
             WatchDrawUtil.drawDivider(canvas, bounds, mDateTextPaint);
@@ -396,18 +389,30 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         // initPaint(): Initializes all of the Paint objects in this class.
         private void initPaint(Resources resources) {
+
+            // BACKGROUND:
             mBackgroundPaint = new Paint();
-            mBackgroundPaint.setColor(resources.getColor(R.color.background));
+            mBackgroundPaint.setColor(resources.getColor(R.color.watchface_background));
+
+            // DIGITAL TEXT:
             mTextPaint = new Paint();
             mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            // DATE TEXT:
             mDateTextPaint = new Paint();
-            mDateTextPaint = createTextPaint(resources.getColor(R.color.secondary_text));
+            mDateTextPaint = createTextPaint(resources.getColor(R.color.min_temp_text));
+
+            // TIME TEXT:
             mTimeTextPaint = new Paint();
-            mTimeTextPaint = createTextPaint(resources.getColor(R.color.primary_text));
+            mTimeTextPaint = createTextPaint(resources.getColor(R.color.max_temp_text));
+
+            // MAX TEMP TEXT:
             mMaxTempTextPaint = new Paint();
-            mMaxTempTextPaint = createTextPaint(resources.getColor(R.color.primary_text));
+            mMaxTempTextPaint = createTextPaint(resources.getColor(R.color.max_temp_text));
+
+            // MIN TEMP TEXT:
             mMinTempTextPaint = new Paint();
-            mMinTempTextPaint = createTextPaint(resources.getColor(R.color.secondary_text));
+            mMinTempTextPaint = createTextPaint(resources.getColor(R.color.min_temp_text));
         }
     }
 }
