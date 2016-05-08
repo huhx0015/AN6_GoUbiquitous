@@ -63,7 +63,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     private static final Typeface NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
     // LOGGING VARIABLES
-    private static final String LOG_TAG = CanvasWatchFaceService.class.getSimpleName();
+    private static final String LOG_TAG = SunshineWatchFace.class.getSimpleName();
 
     // TIMER VARIABLES
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1); // Update rate in milliseconds for interactive mode. We update once a second since seconds are displayed in interactive mode.
@@ -135,7 +135,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_PATH);
+                String sunshineData = intent.getStringExtra(SunshineWearableListener.SUNSHINE_WEATHER_KEY);
 
                 Log.d(LOG_TAG, "mSunshineReceiver: Received Sunshine data: " + sunshineData);
 

@@ -69,7 +69,6 @@ public class SunshineWearableListener extends WearableListenerService {
 
         // If messageEvent matches the path value of SUNSHINE_WEATHER_PATH...
         if (messageEvent.getPath().startsWith(SUNSHINE_WEATHER_PATH)) {
-            // TODO: Update weather code here.
 
             byte[] data = messageEvent.getData();
             String messageContent = new String(data, Charset.forName("UTF-8"));
