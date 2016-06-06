@@ -1,17 +1,20 @@
-AN6_Go_Ubiquitous
-==========================
+AN6_GoUbiquitous
+================
 
-DEVELOPER: Michael Yoon Huh
+DEVELOPER: huhx0015
 
-Sunshine Watchface:
-
+### SUNSHINE WATCHFACE:
 ![an6_preview_square](https://cloud.githubusercontent.com/assets/1645482/15096607/6ebb6a50-14b5-11e6-9e83-af0ee782ce5f.png)
 
 ![an6_preview_round](https://cloud.githubusercontent.com/assets/1645482/15096603/6646ff56-14b5-11e6-9ade-e22610c426de.png)
 
+## Description
+
 Android Nanodegree | Project 6: Go Ubiquitous: A project for the Android Nanodegree program in which a wearable watch face is built for the example Sunshine app to extend support for Android Wear.
 
-# Rubric
+## Rubric
+
+Link: https://review.udacity.com/#!/projects/4632379138/rubric
 
 ### Required Components
 
@@ -27,25 +30,16 @@ Synchronizes weather information from OpenWeatherMap on Android Phones and Table
 
 Pre-requisites
 --------------
-Android SDK 21 or Higher
-
-Build Tools version 21.1.2
-
-Android Support AppCompat 22.2.0
-
-Android Support Annotations 22.2.0
-
-Android Support GridLayout 22.2.0
-
-Android Support CardView 22.2.0
-
-Android Support Design 22.2.0
-
-Android Support RecyclerView 22.2.0
-
-Google Play Services GCM 7.0.0
-
-BumpTech Glide 3.5.2
+* Android SDK 21 or Higher
+* Build Tools version 21.1.2
+* Android Support AppCompat 22.2.0
+* Android Support Annotations 22.2.0
+* Android Support GridLayout 22.2.0
+* Android Support CardView 22.2.0
+* Android Support Design 22.2.0
+* Android Support RecyclerView 22.2.0
+* Google Play Services GCM 7.0.0
+* BumpTech Glide 3.5.2
 
 Getting Started
 ---------------
