@@ -28,7 +28,7 @@ Link: https://review.udacity.com/#!/projects/4632379138/rubric
 
 Synchronizes weather information from OpenWeatherMap on Android Phones and Tablets. Used in the Udacity Advanced Android course.
 
-Pre-requisites
+Pre-Requisites
 --------------
 * Android SDK 21 or Higher
 * Build Tools version 21.1.2
