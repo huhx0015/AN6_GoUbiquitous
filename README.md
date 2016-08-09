@@ -24,12 +24,11 @@ Link: https://review.udacity.com/#!/projects/4632379138/rubric
 - [x] App displays a graphic that summarizes the day’s weather (e.g., a sunny image, rainy image, cloudy image, etc.).
 - [x] App conforms to common standards found in the Android Nanodegree General Project Guidelines.
 
-# Advanced Android Sample App [Mobile]
+## Advanced Android Sample App [Mobile]
 
 Synchronizes weather information from OpenWeatherMap on Android Phones and Tablets. Used in the Udacity Advanced Android course.
 
-Pre-Requisites
---------------
+### Pre-Requisites
 * Android SDK 21 or Higher
 * Build Tools version 21.1.2
 * Android Support AppCompat 22.2.0
@@ -41,13 +40,12 @@ Pre-Requisites
 * Google Play Services GCM 7.0.0
 * BumpTech Glide 3.5.2
 
-Getting Started
----------------
+### Getting Started
+
 This sample uses the Gradle build system.  To build this project, use the
 "gradlew build" command or use "Import Project" in Android Studio.
 
-Support
--------
+### Support
 
 - Google+ Community: https://plus.google.com/communities/105153134372062985968
 - Stack Overflow: http://stackoverflow.com/questions/tagged/android
@@ -55,8 +53,8 @@ Support
 Patches are encouraged, and may be submitted by forking this project and
 submitting a pull request through GitHub. Please see CONTRIBUTING.md for more details.
 
-License
--------
+## License
+
 Copyright 2015 The Android Open Source Project, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
